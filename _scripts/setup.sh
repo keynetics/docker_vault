@@ -32,8 +32,11 @@ vault token-create -address=${VAULT_ADDR} -display-name="backup_token" | awk '/t
 echo "[*] Creating new mount point..."
 vault mounts -address=${VAULT_ADDR}
 vault mount  -address=${VAULT_ADDR} -path=assessment -description="Secrets used in the assessment" generic
-vault write  -address=${VAULT_ADDR} assessment/server1_ad value1=name value2=pwd
+#vault write  -address=${VAULT_ADDR} assessment/server1_ad value1=name value2=pwd
 
 ## READ/WRITE
-# $ vault write -address=${VAULT_ADDR} secret/api-key value=12345678
+vault write -address=${VAULT_ADDR} secret/ai/m_services_auth_key value=abc123
+vault write -address=${VAULT_ADDR} secret/ai/oracle_pass value=abc123
+vault write -address=${VAULT_ADDR} secret/ai/postgres_pass value=abc123
+vault write -address=${VAULT_ADDR} secret/ai/splunk_pass value=abc123
 # $ vault read -address=${VAULT_ADDR} secret/api-key
