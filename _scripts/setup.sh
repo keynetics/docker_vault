@@ -1,42 +1,37 @@
+#!/bin/bash
 ## CONFIG LOCAL ENV
 echo "[*] Config local environment..."
-alias vault='docker-compose exec vault vault "$@"'
+export VAULT_CMD='docker-compose exec vault vault '
 export VAULT_ADDR=http://127.0.0.1:8200
 
 ## INIT VAULT
 echo "[*] Init vault..."
-vault init -address=${VAULT_ADDR} > ./_data/keys.txt
-export VAULT_TOKEN=$(grep 'Initial Root Token:' ./_data/keys.txt | awk '{print substr($NF, 1, length($NF)-1)}')
+$VAULT_CMD operator init -address=${VAULT_ADDR} > ./_data/keys.txt
+export VAULT_TOKEN=$(grep 'Initial Root Token:' ./_data/keys.txt | awk '{print substr($NF, 1, length($NF)-1)}' | perl -pe 's/\x1b\[[0-9;]*[a-zA-Z]//g')
 
 ## UNSEAL VAULT
 echo "[*] Unseal vault..."
-vault unseal -address=${VAULT_ADDR} $(grep 'Key 1:' ./_data/keys.txt | awk '{print $NF}')
-vault unseal -address=${VAULT_ADDR} $(grep 'Key 2:' ./_data/keys.txt | awk '{print $NF}')
-vault unseal -address=${VAULT_ADDR} $(grep 'Key 3:' ./_data/keys.txt | awk '{print $NF}')
+$VAULT_CMD operator unseal -address=${VAULT_ADDR} "$(grep 'Key 1:' ./_data/keys.txt | awk '{print $NF}' | perl -pe 's/\x1b\[[0-9;]*[a-zA-Z]//g')"
+$VAULT_CMD operator unseal -address=${VAULT_ADDR} "$(grep 'Key 2:' ./_data/keys.txt | awk '{print $NF}' | perl -pe 's/\x1b\[[0-9;]*[a-zA-Z]//g')"
+$VAULT_CMD operator unseal -address=${VAULT_ADDR} "$(grep 'Key 3:' ./_data/keys.txt | awk '{print $NF}' | perl -pe 's/\x1b\[[0-9;]*[a-zA-Z]//g')"
 
 ## AUTH
 echo "[*] Auth..."
-vault auth -address=${VAULT_ADDR} ${VAULT_TOKEN}
+$VAULT_CMD login -address=${VAULT_ADDR} "${VAULT_TOKEN}"
 
 ## CREATE USER
 echo "[*] Create user... Remember to change the defaults!!"
-vault auth-enable  -address=${VAULT_ADDR} userpass
-vault policy-write -address=${VAULT_ADDR} admin ./config/admin.hcl
-vault write -address=${VAULT_ADDR} auth/userpass/users/webui password=webui policies=admin
+$VAULT_CMD auth enable  -address=${VAULT_ADDR} userpass
+$VAULT_CMD policy write -address=${VAULT_ADDR} admin ./config/admin.hcl
+$VAULT_CMD write -address=${VAULT_ADDR} auth/userpass/users/webui password=webui policies=admin
 
 ## CREATE BACKUP TOKEN
 echo "[*] Create backup token..."
-vault token-create -address=${VAULT_ADDR} -display-name="backup_token" | awk '/token/{i++}i==2' | awk '{print "backup_token: " $2}' >> ./_data/keys.txt
+$VAULT_CMD token create -address=${VAULT_ADDR} -display-name="backup_token" | awk '/token/{i++}i==2' | awk '{print "backup_token: " $2}' >> ./_data/keys.txt
 
-## MOUNTS
-echo "[*] Creating new mount point..."
-vault mounts -address=${VAULT_ADDR}
-vault mount  -address=${VAULT_ADDR} -path=assessment -description="Secrets used in the assessment" generic
-#vault write  -address=${VAULT_ADDR} assessment/server1_ad value1=name value2=pwd
-
-## READ/WRITE
-vault write -address=${VAULT_ADDR} secret/ai/m_services_auth_key value=abc123
-vault write -address=${VAULT_ADDR} secret/ai/oracle_pass value=abc123
-vault write -address=${VAULT_ADDR} secret/ai/postgres_pass value=abc123
-vault write -address=${VAULT_ADDR} secret/ai/splunk_pass value=abc123
-# $ vault read -address=${VAULT_ADDR} secret/api-key
+## CREATE NEW VAULT entries
+echo "[*] Creating ai kv entries..."
+$VAULT_CMD write -address=${VAULT_ADDR} secret/ai/m_services_auth_key value=abc123
+$VAULT_CMD write -address=${VAULT_ADDR} secret/ai/oracle_pass value=abc123
+$VAULT_CMD write -address=${VAULT_ADDR} secret/ai/postgres_pass value=abc123
+$VAULT_CMD write -address=${VAULT_ADDR} secret/ai/splunk_pass value=abc123

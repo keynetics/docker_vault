@@ -6,6 +6,8 @@ A full description can be found on my website: https://www.marcolancini.it/2017/
 
 ![Vault UI](https://www.marcolancini.it/images/posts/blog_vault_2.jpg)
 
+WARNING: [This issue](https://github.com/hashicorp/vault/issues/3869) was solved in Mac OS X by using `perl -pe 's/\x1b\[[0-9;]*[a-zA-Z]//g'` in some of the scripts when pulling info from keys.txt.
+
 
 ## Usage
 

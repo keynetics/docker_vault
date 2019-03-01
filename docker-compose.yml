@@ -1,6 +1,6 @@
-version: '2'
+version: '3'
 
-services:    
+services:
     consul:
         container_name: consul
         image: consul:latest
@@ -9,20 +9,21 @@ services:
             - "8300:8300"
         volumes:
             - ./config:/config
-            - ./_data/consul:/data
-        command: agent -server -data-dir=/data -bind 0.0.0.0 -client 0.0.0.0 -bootstrap-expect=1
+            - consul:/data
+        command: agent -raft-protocol 3 -server -data-dir=/data -bind 0.0.0.0 -client 0.0.0.0 -bootstrap-expect=1
 
     vault:
         container_name: vault
-        image: vault
+        image: vault:latest
         links:
-            - consul:consul
+            - consul
         depends_on:
             - consul
         ports:
             - "8200:8200"
-        volumes_from:
-            - consul
+        volumes:
+            - ./config:/config
+            - consul:/data
         cap_add:
             - IPC_LOCK
         command: server -config=/config/vault.hcl
@@ -33,7 +34,7 @@ services:
         ports:
             - "8000:8000"
         links:
-            - vault:vault
+            - vault
         environment:
             NODE_TLS_REJECT_UNAUTHORIZED: 0
             VAULT_URL_DEFAULT: https://vault:8200
@@ -42,7 +43,10 @@ services:
         container_name: backup
         build: backup/
         links:
-            - consul:consul
+            - consul
         volumes:
             - ./_data/backup:/backup/
         command: consul-backup
+
+volumes:
+    consul:
