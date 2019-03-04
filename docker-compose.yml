@@ -12,7 +12,7 @@ services:
         volumes:
             - ./config:/config
             - ../vault-helper/system/etc:/config/vault-helper
-            - consul:/data
+            - ./_data/consul:/data
         # https://github.com/hashicorp/consul/issues/1580 -- raft-protocol 3 is required!
         command: agent -raft-protocol 3 -server -data-dir=/data -bind 0.0.0.0 -client 0.0.0.0 -bootstrap-expect=1 -datacenter internal -ui
 
@@ -30,7 +30,7 @@ services:
         volumes:
             - ./config:/config
             - ../vault-helper/system/etc:/config/vault-helper
-            - consul:/data
+            - ./_data/consul:/data
         cap_add:
             - IPC_LOCK
         command: server -config=/config/vault.hcl
@@ -46,7 +46,7 @@ services:
             - vault
         environment:
             NODE_TLS_REJECT_UNAUTHORIZED: 0
-            VAULT_URL_DEFAULT: http://vault:8200
+            VAULT_URL_DEFAULT: https://vault:8200
 
     backup:
         container_name: backup
@@ -58,9 +58,6 @@ services:
         volumes:
             - ./_data/backup:/backup/
         command: consul-backup
-
-volumes:
-    consul:
 
 networks:
     kountnet:

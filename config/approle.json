@@ -1,5 +1,8 @@
 {
     "bind_secret_id": true,
     "token_ttl": 120,
-    "policies": "default"
+    "policies": [
+        "default",
+        "kountdev"
+    ]
 }
