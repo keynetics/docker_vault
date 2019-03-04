@@ -28,10 +28,3 @@ $VAULT_CMD write -address=${VAULT_ADDR} auth/userpass/users/webui password=webui
 ## CREATE BACKUP TOKEN
 echo "[*] Create backup token..."
 $VAULT_CMD token create -address=${VAULT_ADDR} -display-name="backup_token" | awk '/token/{i++}i==2' | awk '{print "backup_token: " $2}' >> ./_data/keys.txt
-
-## CREATE NEW VAULT entries
-echo "[*] Creating ai kv entries..."
-$VAULT_CMD write -address=${VAULT_ADDR} secret/ai/m_services_auth_key value=abc123
-$VAULT_CMD write -address=${VAULT_ADDR} secret/ai/oracle_pass value=abc123
-$VAULT_CMD write -address=${VAULT_ADDR} secret/ai/postgres_pass value=abc123
-$VAULT_CMD write -address=${VAULT_ADDR} secret/ai/splunk_pass value=abc123
