@@ -1,0 +1,3 @@
+[submodule "config/vault-helper"]
+	path = config/vault-helper
+	url = git@git.gs.kount.net:/kount/vault-helper

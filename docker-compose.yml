@@ -3,7 +3,7 @@ version: '3.5'
 services:
     consul:
         container_name: consul
-        image: consul:latest
+        image: consul
         networks:
             - kountnet
         ports:
@@ -11,13 +11,14 @@ services:
             - "8300:8300"
         volumes:
             - ./config:/config
+            - ../vault-helper/system/etc:/config/vault-helper
             - consul:/data
         # https://github.com/hashicorp/consul/issues/1580 -- raft-protocol 3 is required!
         command: agent -raft-protocol 3 -server -data-dir=/data -bind 0.0.0.0 -client 0.0.0.0 -bootstrap-expect=1 -datacenter internal -ui
 
     vault:
         container_name: vault
-        image: vault:latest
+        image: vault
         networks:
             - kountnet
         links:
@@ -28,6 +29,7 @@ services:
             - "8200:8200"
         volumes:
             - ./config:/config
+            - ../vault-helper/system/etc:/config/vault-helper
             - consul:/data
         cap_add:
             - IPC_LOCK
