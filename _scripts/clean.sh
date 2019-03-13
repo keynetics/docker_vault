@@ -6,9 +6,9 @@ case ${answer:0:1} in
         echo "[+] Removing: ./_data/consul/"
         rm -rf ./_data/consul/
         echo "[+] Removing: ./_data/backup/"
-		rm -rf ./_data/backup/
-		echo "[+] Removing: ./_data/keys.txt"
-		rm -f ./_data/keys.txt
+        rm -rf ./_data/backup/
+        echo "[+] Removing: ./_data/keys.txt"
+        rm -f ./_data/keys.txt
         if [ -d "../secret-ids" ]; then
             echo "[+] Removing: ../secret-ids/*"
             rm -f ../secret-ids/*
