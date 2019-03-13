@@ -9,3 +9,4 @@ listener "tcp" {
     tls_key_file = "/config/vault.key"
 }
 disable_mlock = true
+ui = true

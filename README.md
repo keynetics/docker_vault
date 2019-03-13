@@ -4,9 +4,11 @@ How to use docker-compose to spin up a Vault instance backed by Consul.
 
 A full description can be found on my website: https://www.marcolancini.it/2017/blog-vault/
 
-![Vault UI](https://www.marcolancini.it/images/posts/blog_vault_2.jpg)
+No longer using djenriquez/vault-ui, since native Vault UI is used. Access is via [https://localhost:8200/ui/](https://localhost:8200/ui/) once vault is unsealed.
 
-WARNING: [This issue](https://github.com/hashicorp/vault/issues/3869) was solved in Mac OS X by using `perl -pe 's/\x1b\[[0-9;]*[a-zA-Z]//g'` in some of the scripts when pulling info from keys.txt.
+![Vault UI](https://www.datocms-assets.com/2885/1523334283-step3.png)
+
+WARNING: [This issue](https://github.com/hashicorp/vault/issues/3869) was solved in Mac OS X by using `perl -pe 's/\x1b\[[0-9;]*[a-zA-Z]//g'` in some of the scripts when pulling values from keys.txt.
 
 
 ## Usage
